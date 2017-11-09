@@ -41,29 +41,40 @@ public class ReadFile implements Runnable {
     }
 
     private void readText() {
-        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                wordCount += line.split("\\W+").length;
-                contentText.append(line);
-                contentText.append("\n");
-                line = line.replaceAll("[^\\w]", "");
-                line = line.replaceAll("[\\d]", "");
-                charCount += line.length();
-            }
-            resultText.append("Words in the document: " + Integer.toString(wordCount));
-            resultText.append("\n");
-            resultText.append("Characters in the document: " + Integer.toString(charCount));
+        BufferedReader br = null;
+        FileReader fr = null;
+        try {
+                fr = new FileReader(fileName);
+                br = new BufferedReader(fr);
+                String line = null;
+                while ((line = br.readLine()) != null) {
+                    wordCount += line.split("\\W+").length;
+                    contentText.append(line);
+                    contentText.append("\n");
+                    line = line.replaceAll("[^\\w]", "");
+                    line = line.replaceAll("[\\d]", "");
+                    charCount += line.length();
+                }
+                resultText.append("Words in the document: " + Integer.toString(wordCount));
+                resultText.append("\n");
+                resultText.append("Characters in the document: " + Integer.toString(charCount));
+                br.close();
         } catch (IOException e) {
             contentText.append("No file, " + fileName + " found");
             contentText.append("Nothing to display.");
+        } finally {
+            try {
+                if (br != null) br.close();
+                if (fr != null) fr.close();
+            } catch (IOException e) {
+                System.out.println("Error");
+            }
         }
         while (!hasWritten){
             if (wf.getSemaphore()) {
                 hasWritten = true;
                 wf.setSemaphore(false);
-                String write = threadName + ": the file " + fileName + " has " + wordCount + " words and\n" +
-                        charCount + " letters.\n\n";
+                String write = threadName + ": the file " + fileName + " has " + wordCount + " words and" + charCount + " letters.\n\n";
                 wf.writeToFile(write);
                 wf.setSemaphore(true);
             }
