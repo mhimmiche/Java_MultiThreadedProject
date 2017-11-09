@@ -1,0 +1,6 @@
+Thread-01: the file inputFiles/test.txt has 2 words and
+10 letters.
+
+Thread-00: the file inputFiles/ReadFile.java has 70 words and
+309 letters.
+
